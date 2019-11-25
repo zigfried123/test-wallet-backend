@@ -1,0 +1,17 @@
+{
+    "name": "home/test3",
+    "authors": [
+        {
+            "name": "zigfried123",
+            "email": "zigfried123@mail.ru"
+        }
+    ],
+    "autoload" : {
+        "psr-4" : {"controllers\\" : "controllers", "models\\" : "models", "migrations\\" : "migrations", "modules\\": "modules"},
+        "ext-json": "*"
+    },
+    "require" : {
+        "ext-json": "*",
+        "ext-sockets": "*"
+    }
+}
