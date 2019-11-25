@@ -4,3 +4,4 @@
 4. в корне проекта php index.php migrate/up
 5. запустить WebSocket сервер php scripts/changeBalanceServer.php
 6. запустить WebSocket клиент php scripts/changeBalanceClient.php для записи курсов в бд
+7. добавить домен с таким же именем
