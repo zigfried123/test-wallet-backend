@@ -35,7 +35,6 @@ class RateService extends Service
 
     public function addRates($usd, $rur)
     {
-        $this->entity->setId(null);
         $this->entity->setUsd($usd);
         $this->entity->setRub($rur);
 

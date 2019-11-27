@@ -28,12 +28,12 @@ if ($result === false) {
 
 echo "Читаем ответ:\n\n";
 
-$rateService = new RateService();
-
 while ($rates = socket_read($socket, 2048)) {
     list($usd, $rub) = explode('_',$rates);
 
     echo 'USD: '.$usd.PHP_EOL.'RUB: '.$rub.PHP_EOL;
+
+    $rateService = new RateService();
 
     $rateService->addRates($usd, $rub);
 
