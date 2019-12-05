@@ -8,7 +8,7 @@
     {
     
         public function up(){
-            return $this->createTable('rate', ['id' => $this->getPrimaryKey('id'), 'rub' => $this->getFloat('rub'), 'usd' => $this->getFloat('usd')]);
+            return $this->createTable('rate', ['id' => $this->getPrimaryKey('id'), 'rub' => $this->getDouble('rub'), 'usd' => $this->getDouble('usd')]);
         }
     
         public function down(){;
