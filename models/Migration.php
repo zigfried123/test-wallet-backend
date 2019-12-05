@@ -19,12 +19,12 @@ class Migration
 
     public function getTinyInt($col, $unique=null)
     {
-        return "$col tinyint $unique";
+        return "$col tinyint unsigned not null default 0 $unique";
     }
 
     public function getInt($col, $unique=null)
     {
-        return "$col int $unique";
+        return "$col int unsigned not null default 0 $unique";
     }
 
     public function getPrimaryKey($col)
@@ -37,8 +37,13 @@ class Migration
         return "$col varchar($length) not null default '' $unique";
     }
 
-    public function getFloat($col, $length = null, $default=NULL)
+    public function getFloat($col, $length = null)
     {
-        return isset($length) ? "$col float($length) $default" : "$col float $default";
+        return isset($length) ? "$col float($length) not null default 0" : "$col float not null default 0";
+    }
+
+    public function getDouble($col, $length = null)
+    {
+        return isset($length) ? "$col float($length) not null default 0" : "$col float not null default 0";
     }
 }
