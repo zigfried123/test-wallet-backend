@@ -2,9 +2,9 @@
 
 namespace modules\wallet\models\repositories;
 
-use models\Repository;
+use models\RepositoryMysql;
 
-class RateRepository extends Repository
+class RateRepository extends RepositoryMysql
 {
     public function getLastRate()
     {

@@ -6,20 +6,8 @@ use models\Entity;
 
 class UserEntity extends Entity
 {
-    private $_id;
-    private $_wallet;
     private $_name;
 
-
-    public function getId()
-    {
-        return $this->_id;
-    }
-
-    public function setId($id)
-    {
-        $this->_id = $id;
-    }
 
     public function getName()
     {
@@ -31,14 +19,15 @@ class UserEntity extends Entity
         $this->_name = $name;
     }
 
-    public function getWallet()
-    {
-        return $this->_wallet;
-    }
 
-    public function setWallet($wallet)
+
+    public function __call($name, $args)
     {
-        $this->_wallet = $wallet;
+        if(strpos($name,'set') !== false) {
+            $prop = strtolower(str_replace('set', '', $name));
+
+            $this->$prop = $args[0];
+        }
     }
 
 }

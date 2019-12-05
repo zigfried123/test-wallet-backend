@@ -2,9 +2,9 @@
 
 namespace modules\wallet\models\services;
 
-use models\repositories\BalanceRepository;
 use models\Service;
 use modules\wallet\models\entities\BalanceEntity;
+use modules\wallet\models\repositories\BalanceRepository;
 
 /**
  * Class BalanceService

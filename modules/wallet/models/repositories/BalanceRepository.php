@@ -2,9 +2,9 @@
 
 namespace modules\wallet\models\repositories;
 
-use models\Repository;
+use models\RepositoryMysql;
 
-class BalanceRepository extends Repository
+class BalanceRepository extends RepositoryMysql
 {
     public function addSum($sum, $walletId)
     {

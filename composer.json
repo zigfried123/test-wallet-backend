@@ -12,6 +12,7 @@
     },
     "require" : {
         "ext-json": "*",
-        "ext-sockets": "*"
+        "ext-sockets": "*",
+        "mongodb/mongodb": "^1.5"
     }
 }

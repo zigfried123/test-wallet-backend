@@ -4,6 +4,12 @@ namespace models;
 
 class Routing
 {
+
+    public static function getRoutingType($hasArgv)
+    {
+
+    }
+
     public function execute()
     {
         $paths = explode('/', ltrim($_SERVER["PATH_INFO"], '/'));
@@ -37,12 +43,16 @@ class Routing
 
         } elseif ($_SERVER["REQUEST_METHOD"] == 'GET') {
             $data = parse_url($_SERVER["REQUEST_URI"]);
-            $data = parse_str($data['query'], $params);
+            parse_str($data['query'], $params);
             $data = $params;
         }
 
         try {
-            return json_encode((new $class($_SERVER["REQUEST_METHOD"], $method))->$method($data));
+
+            $obj = new $class($_SERVER["REQUEST_METHOD"], $method);
+
+            return json_encode(call_user_func_array([$obj,$method],$data));
+
         } catch (Exception $e) {
             echo $e->getMessage();
         }

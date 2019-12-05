@@ -43,10 +43,8 @@ class WalletController extends Controller
         ];
     }
 
-    public function changeBalance($data=[])
+    public function changeBalance($walletId,$sum,$currency,$reasonId,$transactionType)
     {
-        extract($data);
-
         $reason = new Reason();
 
         $reason->setStrategy($reasonId);
@@ -64,9 +62,9 @@ class WalletController extends Controller
         return ['balance'=>$sum.' '.WalletEntity::CURRENCIES[$currentCurrency]];
     }
 
-    public function getBalance($data=[])
+    public function getBalance($walletId)
     {
-        $balance = $this->repository->getBalance($data['walletId']);
+        $balance = $this->repository->getBalance($walletId);
 
         return ['balance'=>$balance];
     }

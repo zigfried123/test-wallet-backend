@@ -2,9 +2,10 @@
 
 namespace modules\user\models\repositories;
 
-use models\Repository;
+use models\RepositoryMongo;
+use models\RepositoryMysql;
 
-class UserRepository extends Repository
+class UserRepository extends RepositoryMysql
 {
 
 }

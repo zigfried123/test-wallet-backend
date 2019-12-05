@@ -8,7 +8,7 @@
     {
     
         public function up(){
-            return $this->createTable('wallet', ['id' => $this->getPrimaryKey('id'), 'currency' => $this->getTinyInt('currency'), 'name' => $this->getInt('name'), 'user_id' => $this->getInt('user_id')]);
+            return $this->createTable('wallet', ['id' => $this->getPrimaryKey('id'), 'currency' => $this->getTinyInt('currency'), 'name' => $this->getInt('name'), 'user_id' => $this->getInt('user_id', 'unique')]);
         }
     
         public function down(){

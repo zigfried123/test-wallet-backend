@@ -8,7 +8,7 @@
     {
     
         public function up(){
-            return $this->createTable('user', ['id' => $this->getPrimaryKey('id'),'name' => $this->getVarChar('name',10)]);
+            return $this->createTable('user', ['id' => $this->getPrimaryKey('id'),'name' => $this->getVarChar('name',10, 'unique')]);
         }
     
         public function down(){

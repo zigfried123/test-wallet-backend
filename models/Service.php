@@ -2,8 +2,12 @@
 
 namespace models;
 
+use models\traits\Singleton;
+
 class Service
 {
+    use Singleton;
+
     protected $repository;
     protected $entity;
 

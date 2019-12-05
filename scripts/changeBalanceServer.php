@@ -33,7 +33,7 @@ do {
         if (socket_write($msgsock, $usd.'_'.$rub, strlen($usd.'_'.$rub)) === false) {
             break;
         }
-        sleep(3);
+        sleep(1);
     }
 
     socket_close($msgsock);

@@ -3,6 +3,7 @@
 namespace modules\wallet\models\entities;
 
 use models\Entity;
+use modules\user\models\entities\UserEntity;
 
 class WalletEntity extends Entity
 {

@@ -17,14 +17,14 @@ class Migration
         return Mysql::$db->query("DROP TABLE `$table`");
     }
 
-    public function getTinyInt($col)
+    public function getTinyInt($col, $unique=null)
     {
-        return "$col tinyint";
+        return "$col tinyint $unique";
     }
 
-    public function getInt($col)
+    public function getInt($col, $unique=null)
     {
-        return "$col int";
+        return "$col int $unique";
     }
 
     public function getPrimaryKey($col)
@@ -32,9 +32,9 @@ class Migration
         return "$col int NOT NULL AUTO_INCREMENT PRIMARY KEY";
     }
 
-    public function getVarChar($col, $length = null)
+    public function getVarChar($col,$length,$unique=null)
     {
-        return isset($length) ? "$col varchar($length)" : "$col varchar";
+        return "$col varchar($length) not null default '' $unique";
     }
 
     public function getFloat($col, $length = null, $default=NULL)

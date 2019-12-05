@@ -2,7 +2,7 @@
 
 namespace modules\wallet\models\repositories;
 
-use models\Repository;
+use models\RepositoryMysql;
 use modules\wallet\models\entities\WalletEntity;
 
 /**
@@ -10,7 +10,7 @@ use modules\wallet\models\entities\WalletEntity;
  * @package repositories
  *
  */
-class WalletRepository extends Repository
+class WalletRepository extends RepositoryMysql
 {
 
     public function getWalletById($walletId)

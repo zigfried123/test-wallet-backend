@@ -3,6 +3,7 @@
 namespace modules\wallet\models\services;
 
 use models\Service;
+use models\traits\Singleton;
 use modules\wallet\models\entities\WalletEntity;
 use modules\wallet\models\repositories\BalanceRepository;
 use modules\wallet\models\repositories\RateRepository;

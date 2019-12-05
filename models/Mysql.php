@@ -2,12 +2,18 @@
 
 namespace models;
 
-class Mysql
+class Mysql extends Db
 {
-    /** @var \PDO $db */
     public static $db;
 
-    public static function initDb()
+    public function init($dbName='')
+    {
+        $this->initDb($dbName);
+        $this->connect($dbName);
+        $this->initMigrations();
+    }
+
+    public function initDb($dbName='')
     {
         $config = self::getConfig();
 
@@ -15,27 +21,31 @@ class Mysql
 
         $db = new \PDO("mysql:host=$server", $user, $password);
 
-       return $db->exec("CREATE DATABASE `$database`;
+       return $db->exec("CREATE DATABASE `$dbName`;
             CREATE USER '$user'@'localhost' IDENTIFIED BY '$password';
-            GRANT ALL ON `$database`.* TO '$user'@'localhost';
+            GRANT ALL ON `$dbName`.* TO '$user'@'localhost';
             FLUSH PRIVILEGES;")
         or false;
 
     }
 
-    public static function connect()
+    public function connect($dbName='')
     {
         $db = self::getConfig();
 
         extract($db);
 
-        self::$db = new \PDO("mysql:host=$server;dbname=$database", $user, $password);
+        $pdo = new \PDO("mysql:host=$server;dbname=$dbName", $user, $password);
 
-        self::$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+        if(!(self::$db instanceof \PDO)) {
+            self::$db = $pdo;
+        }
 
     }
 
-    public static function initMigrations()
+    private function initMigrations()
     {
         try {
             Mysql::$db->query("SELECT * FROM `migrations` LIMIT 1");
@@ -44,7 +54,7 @@ class Mysql
         }
     }
 
-    private static function getConfig()
+    public function getConfig()
     {
         return require './config/mysql.php';
     }
