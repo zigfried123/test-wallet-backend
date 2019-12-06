@@ -2,20 +2,27 @@
 
 namespace models;
 
+use models\services\RepositoryMysqlService;
+
 /**
  * Class Repository
  * @package models
+ * @property \PDO $_db
+ * @property RepositoryMysqlService $_repositoryMysqlService
  */
 class RepositoryMysql extends Repository
 {
     private $_db;
     private $_tables;
+    private $_repositoryMysqlService;
 
    public function __construct()
    {
        parent::__construct();
 
        $this->_db = Mysql::$db;
+
+       $this->_repositoryMysqlService = RepositoryMysqlService::getInstance();
 
    }
 
@@ -33,13 +40,7 @@ class RepositoryMysql extends Repository
 
         $sql = "INSERT INTO `{$this->tableName}` ($keys) VALUES ($vals)";
 
-        $q = $this->_db->prepare($sql);
-
-        /**
-         * @var $entity Entity
-         */
-
-        if ($q->execute($properties)) {
+        if ($this->execute($sql, $properties)) {
 
             $id = $this->_db->lastInsertId();
 
@@ -89,7 +90,7 @@ class RepositoryMysql extends Repository
         return $data;
     }
 
-    private function execute($sql, $params)
+    private function execute($sql, $params): \PDOStatement
     {
         $q = $this->_db->prepare($sql);
 
@@ -98,110 +99,13 @@ class RepositoryMysql extends Repository
         return $q;
     }
 
-    private function getKeyValueParamsFromArray($data)
-    {
-        foreach($data as $key=>$val){
-            $params[] = "$key='$val'";
-        }
 
-        $params = implode(' AND ', $params);
-
-        return $params;
-
-    }
-
-    public function getAllFields($queryString)
-    {
-
-        $cols = $this->getColumnsByTable();
-
-        $vals = $this->getSliceColsAllValues($queryString);
-
-        $data = $this->uniteColsWithAllVals($cols, $vals);
-
-        return $data;
-    }
-
-    private function uniteColsWithAllVals($cols, $dataTables)
-    {
-        $dataTables = array_map(function ($tables) use ($cols) {
-
-            $names = $keys = array_keys($tables);
-
-            $tablesWithoutNames = array_map(function ($vals, $table) use ($cols) {
-
-                return array_combine($cols[$table], $vals);
-            }, $tables, $keys);
-
-            $tables = array_combine($names, $tablesWithoutNames);
-
-            return $tables;
-
-        }, $dataTables);
-
-        return $dataTables;
-    }
-
-    private function countColsInTables()
-    {
-        $cols = $this->getColumnsByTable();
-
-        return array_map(function ($v) {
-
-            $v = count($v);
-
-            return $v;
-
-        }, $cols);
-    }
-
-    private function getSliceColsAllValues($queryString)
-    {
-        $q = Mysql::$db->query($queryString);
-
-        $rows = $q->fetchAll(\PDO::FETCH_NUM);
-
-        $q->closeCursor();
-
-        $counts = $this->countColsInTables();
-
-        $arrays = [];
-
-        foreach ($rows as $values) {
-
-            $i = 0;
-
-            $tables = [];
-
-            foreach ($counts as $table => $count) {
-
-                $tables[$table] = array_slice($values, $i, $count);
-
-                $i += $count;
-
-            }
-
-            $arrays[] = $tables;
-
-        }
-
-        return $arrays;
-    }
-
-
-
-    public function getDefinedFields()
-    {
-        $data = $this->fetchAll(\PDO::FETCH_ASSOC);
-
-        return $data;
-    }
 
     public function dropProcedure($name)
     {
         $sql = "DROP PROCEDURE $name";
 
-        Mysql::$db->query($sql);
+        $this->_db->query($sql);
     }
 
     public function callProcedure($name, $params)
@@ -210,54 +114,21 @@ class RepositoryMysql extends Repository
 
         $sql = "CALL $name($params)";
 
-        $q = Mysql::$db->query($sql);
+        $q = $this->_db->query($sql);
 
-        $data = $q->fetchAll(\PDO::FETCH_NUM);
+        $data = $q->fetch(\PDO::FETCH_NUM);
 
         $q->closeCursor();
 
-        $this->_tables = explode(',',end(end($data)));
+        $tables = explode(',',end($data));
 
-        $data = $this->getAllFields($sql);
+        $data = $this->_repositoryMysqlService->getAllFields($sql,$tables);
 
-        return $data;
-
-    }
-
-    public function setTables($tables)
-    {
-        $this->_tables = $tables;
-    }
-
-
-    public function getColumnsByTable()
-    {
-        $data = [];
-
-        /**
-         * @var \PDOStatement $q
-         */
-
-        foreach ($this->_tables as $table) {
-
-            $q = Mysql::$db->prepare("SHOW COLUMNS FROM $table");
-
-            $q->execute();
-
-            $cols = $q->fetchAll(\PDO::FETCH_ASSOC);
-
-            foreach ($cols as $col) {
-                $data[$table][] = $col['Field'];
-            }
-        }
+        var_dump($data); die;
 
         return $data;
 
     }
-
-
-
-
 
     public function createProcedure($name, $params, $sql)
     {
@@ -269,7 +140,7 @@ class RepositoryMysql extends Repository
         
         ";
 
-        Mysql::$db->query($sql);
+        $this->_db->query($sql);
     }
 
 
