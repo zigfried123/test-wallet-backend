@@ -11,7 +11,7 @@ class RepositoryMysqlService
 
     private $_tables;
 
-    public function getAllFieldsByTables($queryString,$tables)
+    public function getAllFieldsByTablesAllResults($queryString,$tables)
     {
         $cols = $this->getColumnsByTable($tables);
 
@@ -20,6 +20,18 @@ class RepositoryMysqlService
         $data = $this->uniteColsWithAllVals($cols, $vals);
 
         return $data;
+    }
+
+    public function getAllFieldsByTablesOneResult($queryString,$tables)
+    {
+        $cols = $this->getColumnsByTable($tables);
+
+        $vals = $this->getSliceColsOneValues($queryString,$tables);
+
+        $data = $this->uniteColsWithOneVals($cols, $vals);
+        
+        return $data;
+
     }
 
     public function getDefinedFields($queryString, $numRows)
@@ -154,7 +166,7 @@ class RepositoryMysqlService
         return $arrays;
     }
 
-    private function getSliceColsOneValues($queryString)
+    private function getSliceColsOneValues($queryString, $tables)
     {
 
         $q = Mysql::getDb()->query($queryString);
@@ -165,7 +177,7 @@ class RepositoryMysqlService
 
         $cols = [];
 
-        $counts = $this->countColsInTables();
+        $counts = $this->countColsInTables($tables);
 
         foreach ($counts as $col => $count) {
 

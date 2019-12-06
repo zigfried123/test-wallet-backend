@@ -106,17 +106,9 @@ class Query
     public function one()
     {
         if (current($this->_select) == '*') {
-
-            $cols = $this->getColumnsByTable($this->_tables);
-
-            $vals = $this->getSliceColsOneValues();
-
-            $data = $this->uniteColsWithOneVals($cols, $vals);
-
+            $data = $this->_repositoryService->getAllFieldsByTablesOneResult($this->_queryString, $this->_tables);
         } else {
-
             $data =  $this->_repositoryService->getDefinedFields($this->_queryString, 'one');
-
         }
 
         return $data;
@@ -125,7 +117,7 @@ class Query
     public function all()
     {
         if (current($this->_select) == '*') {
-            $data = $this->_repositoryService->getAllFieldsByTables($this->_queryString, $this->_tables);
+            $data = $this->_repositoryService->getAllFieldsByTablesAllResults($this->_queryString, $this->_tables);
         }else{
             $data =  $this->_repositoryService->getDefinedFields($this->_queryString, 'all');
         }
