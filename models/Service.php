@@ -2,11 +2,11 @@
 
 namespace models;
 
-use models\traits\Singleton;
+use models\traits\NestedSingleton;
 
 class Service
 {
-    use Singleton;
+    use NestedSingleton;
 
     protected $repository;
     protected $entity;

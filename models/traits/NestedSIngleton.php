@@ -2,7 +2,7 @@
 
 namespace models\traits;
 
-trait Singleton
+trait NestedSingleton
 {
     protected static $instance;
 

@@ -1,11 +1,14 @@
 <?php
 
-namespace modules\user\behaviors;
+namespace modules\wallet\observers;
 
+use models\traits\Singleton;
 use modules\wallet\models\services\WalletService;
 
-class UserBehavior
+class WalletObserver
 {
+    use Singleton;
+
     public function onUserSave($currency, $userId)
     {
         $walletService = WalletService::getInstance();
