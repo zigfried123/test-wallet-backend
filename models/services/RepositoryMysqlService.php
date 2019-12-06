@@ -11,7 +11,7 @@ class RepositoryMysqlService
 
     private $_tables;
 
-    public function getAllFieldsByTablesAllResults($queryString,$tables)
+    public function getAllFieldsByTablesAllResults($queryString, $tables)
     {
         $cols = $this->getColumnsByTable($tables);
 
@@ -22,23 +22,23 @@ class RepositoryMysqlService
         return $data;
     }
 
-    public function getAllFieldsByTablesOneResult($queryString,$tables)
+    public function getAllFieldsByTablesOneResult($queryString, $tables)
     {
         $cols = $this->getColumnsByTable($tables);
 
-        $vals = $this->getSliceColsOneValues($queryString,$tables);
+        $vals = $this->getSliceColsOneValues($queryString, $tables);
 
         $data = $this->uniteColsWithOneVals($cols, $vals);
-        
+
         return $data;
 
     }
 
     public function getDefinedFields($queryString, $numRows)
     {
-        if($numRows == 'all') {
+        if ($numRows == 'all') {
             $data = $this->fetchAll(\PDO::FETCH_ASSOC, $queryString);
-        }elseif($numRows == 'one'){
+        } elseif ($numRows == 'one') {
             $data = $this->fetch(\PDO::FETCH_ASSOC, $queryString);
         }
 
@@ -90,7 +90,7 @@ class RepositoryMysqlService
 
     private function getKeyValueParamsFromArray($data)
     {
-        foreach($data as $key=>$val){
+        foreach ($data as $key => $val) {
             $params[] = "$key='$val'";
         }
 
@@ -201,7 +201,6 @@ class RepositoryMysqlService
 
         return $data;
     }
-
 
 
 }

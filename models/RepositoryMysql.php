@@ -119,7 +119,7 @@ class RepositoryMysql extends Repository
 
         $tables = explode(',',end($data));
 
-        $data = $this->_repositoryMysqlService->getAllFields($sql,$tables);
+        $data = $this->_repositoryMysqlService->getAllFieldsByTablesAllResults($sql,$tables);
 
         var_dump($data); die;
 
