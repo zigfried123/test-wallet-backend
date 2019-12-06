@@ -2,10 +2,12 @@
 
 namespace models;
 
+use models\services\RepositoryMysqlService;
+
 /**
  * Class Query
  * @package models
- * @property RepositoryMysql $_repository
+ * @property RepositoryMysqlService $_repositoryService
  */
 class Query
 {
@@ -14,11 +16,11 @@ class Query
     private $_alias;
     private $_tables = [];
     private $_select;
-    private $_repository;
+    private $_repositoryService;
 
-    public function __construct($tableName, $repository)
+    public function __construct($tableName)
     {
-        $this->_repository = $repository;
+        $this->_repositoryService = RepositoryMysqlService::getInstance();
 
         $this->_tables[] = $tableName;
 
@@ -101,63 +103,6 @@ class Query
         return $this->_queryString;
     }
 
-    public function getColumnsByTable($tables)
-    {
-        $output = [];
-
-        foreach ($tables as $table) {
-
-            $q = Mysql::$db->prepare("SHOW COLUMNS FROM $table");
-
-            $q->execute();
-
-            $cols = $q->fetchAll(\PDO::FETCH_ASSOC);
-
-            foreach ($cols as $col) {
-                $output[$table][] = $col['Field'];
-            }
-        }
-
-        return $output;
-
-    }
-
-    private function getSliceColsOneValues()
-    {
-
-        $q = Mysql::$db->query($this->_queryString);
-
-        $res = $q->fetch(\PDO::FETCH_NUM);
-
-        $i = 0;
-
-        $cols = [];
-
-        $counts = $this->countColsInTables();
-
-        foreach ($counts as $col => $count) {
-
-            $cols[$col] = array_slice($res, $i, $count);
-
-            $i += $count;
-
-        }
-
-        return $cols;
-    }
-
-
-    private function uniteColsWithOneVals($cols, $vals)
-    {
-        $data = [];
-
-        foreach ($cols as $table => $col) {
-            $data[$table] = array_combine($col, $vals[$table]);
-        }
-
-        return $data;
-    }
-
     public function one()
     {
         if (current($this->_select) == '*') {
@@ -170,42 +115,19 @@ class Query
 
         } else {
 
-          $data = $this->fetch(\PDO::FETCH_ASSOC);
+            $data =  $this->_repositoryService->getDefinedFields($this->_queryString, 'one');
 
         }
 
         return $data;
     }
 
-    private function fetch($fetchStyle)
-    {
-        $q = Mysql::$db->query($this->_queryString);
-
-        $data = $q->fetch(\PDO::FETCH_ASSOC);
-
-        return $data;
-    }
-
-    private function fetchAll($fetchStyle)
-    {
-        $q = Mysql::$db->query($this->_queryString);
-
-        $data = $q->fetchAll(\PDO::FETCH_ASSOC);
-
-        return $data;
-    }
-
     public function all()
     {
-
         if (current($this->_select) == '*') {
-
-            $this->_repository->setTables($this->_tables);
-
-            $data = $this->_repository->getAllFields($this->_queryString);
-
+            $data = $this->_repositoryService->getAllFieldsByTables($this->_queryString, $this->_tables);
         }else{
-            $data =  $this->_repository->getDefinedFields();
+            $data =  $this->_repositoryService->getDefinedFields($this->_queryString, 'all');
         }
 
         return $data;

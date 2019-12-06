@@ -8,13 +8,13 @@ class Migration
     {
         $values = implode(', ', array_values($cols));
 
-        return Mysql::$db->query("CREATE TABLE `$table` ($values)");
+        return Mysql::getDb()->query("CREATE TABLE `$table` ($values)");
     }
 
     public function dropTable($table)
     {
-        Mysql::$db->query("TRUNCATE TABLE `$table`");
-        return Mysql::$db->query("DROP TABLE `$table`");
+        Mysql::getDb()->query("TRUNCATE TABLE `$table`");
+        return Mysql::getDb()->query("DROP TABLE `$table`");
     }
 
     public function getTinyInt($col, $unique=null)

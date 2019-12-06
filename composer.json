@@ -13,6 +13,7 @@
     "require" : {
         "ext-json": "*",
         "ext-sockets": "*",
+        "ext-pdo": "*",
         "mongodb/mongodb": "^1.5"
     }
 }

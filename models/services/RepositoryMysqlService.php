@@ -11,6 +11,71 @@ class RepositoryMysqlService
 
     private $_tables;
 
+    public function getAllFieldsByTables($queryString,$tables)
+    {
+        $cols = $this->getColumnsByTable($tables);
+
+        $vals = $this->getSliceColsAllValues($queryString, $tables);
+
+        $data = $this->uniteColsWithAllVals($cols, $vals);
+
+        return $data;
+    }
+
+    public function getDefinedFields($queryString, $numRows)
+    {
+        if($numRows == 'all') {
+            $data = $this->fetchAll(\PDO::FETCH_ASSOC, $queryString);
+        }elseif($numRows == 'one'){
+            $data = $this->fetch(\PDO::FETCH_ASSOC, $queryString);
+        }
+
+        return $data;
+    }
+
+    public function getColumnsByTable($tables)
+    {
+        $data = [];
+
+        /**
+         * @var \PDOStatement $q
+         */
+
+        foreach ($tables as $table) {
+
+            $q = Mysql::getDb()->prepare("SHOW COLUMNS FROM $table");
+
+            $q->execute();
+
+            $cols = $q->fetchAll(\PDO::FETCH_ASSOC);
+
+            foreach ($cols as $col) {
+                $data[$table][] = $col['Field'];
+            }
+        }
+
+        return $data;
+
+    }
+
+    private function fetch($fetchStyle, $queryString)
+    {
+        $q = Mysql::getDb()->query($queryString);
+
+        $data = $q->fetch(\PDO::FETCH_ASSOC);
+
+        return $data;
+    }
+
+    private function fetchAll($fetchStyle, $queryString)
+    {
+        $q = Mysql::getDb()->query($queryString);
+
+        $data = $q->fetchAll($fetchStyle);
+
+        return $data;
+    }
+
     private function getKeyValueParamsFromArray($data)
     {
         foreach($data as $key=>$val){
@@ -21,17 +86,6 @@ class RepositoryMysqlService
 
         return $params;
 
-    }
-
-    public function getAllFields($queryString,$tables)
-    {
-        $cols = $this->getColumnsByTable($tables);
-
-        $vals = $this->getSliceColsAllValues($queryString, $tables);
-
-        $data = $this->uniteColsWithAllVals($cols, $vals);
-
-        return $data;
     }
 
     private function uniteColsWithAllVals($cols, $dataTables)
@@ -69,7 +123,7 @@ class RepositoryMysqlService
 
     private function getSliceColsAllValues($queryString, $tables)
     {
-        $q = Mysql::$db->query($queryString);
+        $q = Mysql::getDb()->query($queryString);
 
         $rows = $q->fetchAll(\PDO::FETCH_NUM);
 
@@ -100,38 +154,42 @@ class RepositoryMysqlService
         return $arrays;
     }
 
-
-
-    public function getDefinedFields()
+    private function getSliceColsOneValues($queryString)
     {
-        $data = $this->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $data;
+        $q = Mysql::getDb()->query($queryString);
+
+        $res = $q->fetch(\PDO::FETCH_NUM);
+
+        $i = 0;
+
+        $cols = [];
+
+        $counts = $this->countColsInTables();
+
+        foreach ($counts as $col => $count) {
+
+            $cols[$col] = array_slice($res, $i, $count);
+
+            $i += $count;
+
+        }
+
+        return $cols;
     }
 
-    public function getColumnsByTable($tables)
+
+    private function uniteColsWithOneVals($cols, $vals)
     {
         $data = [];
 
-        /**
-         * @var \PDOStatement $q
-         */
-
-        foreach ($tables as $table) {
-
-            $q = Mysql::$db->prepare("SHOW COLUMNS FROM $table");
-
-            $q->execute();
-
-            $cols = $q->fetchAll(\PDO::FETCH_ASSOC);
-
-            foreach ($cols as $col) {
-                $data[$table][] = $col['Field'];
-            }
+        foreach ($cols as $table => $col) {
+            $data[$table] = array_combine($col, $vals[$table]);
         }
 
         return $data;
-
     }
+
+
 
 }

@@ -13,7 +13,6 @@ use models\services\RepositoryMysqlService;
 class RepositoryMysql extends Repository
 {
     private $_db;
-    private $_tables;
     private $_repositoryMysqlService;
 
    public function __construct()
@@ -55,7 +54,7 @@ class RepositoryMysql extends Repository
 
     public function find()
     {
-        return new Query($this->tableName, $this);
+        return new Query($this->tableName);
     }
 
     public function findOne($data)
@@ -90,7 +89,7 @@ class RepositoryMysql extends Repository
         return $data;
     }
 
-    private function execute($sql, $params): \PDOStatement
+    protected function execute($sql, $params): \PDOStatement
     {
         $q = $this->_db->prepare($sql);
 
@@ -98,8 +97,6 @@ class RepositoryMysql extends Repository
 
         return $q;
     }
-
-
 
     public function dropProcedure($name)
     {

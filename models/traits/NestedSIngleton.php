@@ -6,7 +6,7 @@ trait NestedSingleton
 {
     protected static $instance;
 
-    public static function getInstance()
+    public static function getInstance():static
     {
         $class = new static;
 

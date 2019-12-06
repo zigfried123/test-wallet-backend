@@ -5,7 +5,6 @@ namespace modules\user\controllers;
 use models\Controller;
 use models\Mysql;
 use models\Profiler;
-use modules\user\models\entities\UserEntity;
 use modules\user\models\repositories\UserRepository;
 use modules\user\models\services\UserService;
 use modules\wallet\observers\WalletObserver;
@@ -31,15 +30,7 @@ class UserController extends Controller
 
     public function register(string $name, int $currency)
     {
-        /**
-         * @var $user UserEntity
-         */
-
-        $pdo = Mysql::$db;
-
-        /**
-         * @var \PDO $pdo
-         */
+        $pdo = Mysql::getDb();
 
         try {
 
@@ -63,18 +54,16 @@ class UserController extends Controller
 
     public function getUserData()
     {
-        /*
-                $data = $this->repository->find()
-                    ->alias('u')
-                    ->select(['*'])
-                    ->leftJoin(['wallet w' => ['user_id', 'id']])
-                    ->leftJoin(['balance b' => ['wallet_id', 'id']])
-                    ->where(['user_id'=>'78'])
-                    ->groupBy('u.id')
-                    ->orderBy('u.id ASC')
-                    ->all();
 
-        */
+        $data = $this->repository->find()
+            ->alias('u')
+            ->select(['*'])
+            ->leftJoin(['wallet w' => ['user_id', 'id']])
+            ->leftJoin(['balance b' => ['wallet_id', 'id']])
+            ->where(['user_id' => '78'])
+            ->groupBy('u.id')
+            ->orderBy('u.id ASC')
+            ->all();
 
         /*
                 $sql = "
@@ -95,6 +84,6 @@ class UserController extends Controller
         Profiler::end();
 
 
-       return $data;
+        return $data;
     }
 }

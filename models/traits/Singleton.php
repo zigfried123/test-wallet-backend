@@ -6,7 +6,7 @@ trait Singleton
 {
     private static $instance;
 
-    public static function getInstance()
+    public static function getInstance():self
     {
         $class = new self;
 

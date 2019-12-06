@@ -12,7 +12,7 @@ class MigrateUp
             return str_replace('.php', '', $v);
         }, $mgrs);
 
-        $q = Mysql::$db->query("SELECT name FROM `migrations`");
+        $q = Mysql::getDb()->query("SELECT name FROM `migrations`");
 
         $mgrsFromDb = array_column($q->fetchAll(), 'name');
 
@@ -23,7 +23,7 @@ class MigrateUp
             $class = '\migrations\\' . $mgrs;
 
             if ((new $class())->up()) {
-                $q = Mysql::$db->prepare("INSERT INTO `migrations` (name) VALUES (:migration)");
+                $q = Mysql::getDb()->prepare("INSERT INTO `migrations` (name) VALUES (:migration)");
                 if($q->execute(['migration' => $mgrs])) echo "миграция $mgrs применена".PHP_EOL;
             }
         }

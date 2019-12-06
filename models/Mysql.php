@@ -2,9 +2,13 @@
 
 namespace models;
 
+/**
+ * Class Mysql
+ * @package models
+ */
 class Mysql extends Db
 {
-    public static $db;
+    private static $_db;
 
     public function init($dbName='')
     {
@@ -39,18 +43,23 @@ class Mysql extends Db
 
         $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
-        if(!(self::$db instanceof \PDO)) {
-            self::$db = $pdo;
+        if(!(self::$_db instanceof \PDO)) {
+            self::$_db = $pdo;
         }
 
+    }
+
+    public static function getDb():\PDO
+    {
+        return self::$_db;
     }
 
     private function initMigrations()
     {
         try {
-            Mysql::$db->query("SELECT * FROM `migrations` LIMIT 1");
+            self::getDb()->query("SELECT * FROM `migrations` LIMIT 1");
         } catch (\Exception $e) {
-            Mysql::$db->query('CREATE TABLE `migrations` (`id` int NOT NULL AUTO_INCREMENT PRIMARY KEY, `name` varchar(255))');
+            self::getDb()->query('CREATE TABLE `migrations` (`id` int NOT NULL AUTO_INCREMENT PRIMARY KEY, `name` varchar(255))');
         }
     }
 
