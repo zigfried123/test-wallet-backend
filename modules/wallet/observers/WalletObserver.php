@@ -11,6 +11,10 @@ class WalletObserver
 
     public function onUserSave($currency, $userId)
     {
+        /**
+         * @var WalletService $walletService
+         */
+
         $walletService = WalletService::getInstance();
 
         $walletService->createWallet($currency, $userId);

@@ -9,9 +9,7 @@ class RepositoryMysqlService
 {
     use Singleton;
 
-    private $_tables;
-
-    public function getAllFieldsByTablesAllResults($queryString, $tables)
+    public function getAllFieldsByTables($queryString, $tables)
     {
         $cols = $this->getColumnsByTable($tables);
 
@@ -19,28 +17,42 @@ class RepositoryMysqlService
 
         $data = $this->uniteColsWithAllVals($cols, $vals);
 
-        return $data;
+        $entities = $this->fillEntities($data);
+
+        return $entities;
     }
 
-    public function getAllFieldsByTablesOneResult($queryString, $tables)
+    private function fillEntities($data)
     {
-        $cols = $this->getColumnsByTable($tables);
+        $entityService = new EntityService();
 
-        $vals = $this->getSliceColsOneValues($queryString, $tables);
+        foreach ($data as $tables) {
 
-        $data = $this->uniteColsWithOneVals($cols, $vals);
+            $mainTable = key($tables);
 
-        return $data;
+            foreach ($tables as $table => $attributes) {
 
-    }
+                $entity = $entityService->fillEntity($attributes, $table);
 
-    public function getDefinedFields($queryString, $numRows)
-    {
-        if ($numRows == 'all') {
-            $data = $this->fetchAll(\PDO::FETCH_ASSOC, $queryString);
-        } elseif ($numRows == 'one') {
-            $data = $this->fetch(\PDO::FETCH_ASSOC, $queryString);
+                if ($table == $mainTable) {
+                    $mainEntity = $entity;
+                }
+
+                if ($table != $mainTable) {
+                    $mainEntity->{'set' . ucfirst($table)}($entity);
+                }
+            }
+
+            $entities[] = $mainEntity;
         }
+
+        return $entities;
+    }
+
+
+    public function getDefinedFields($queryString)
+    {
+        $data = $this->fetchAll(\PDO::FETCH_ASSOC, $queryString);
 
         return $data;
     }
@@ -88,7 +100,7 @@ class RepositoryMysqlService
         return $data;
     }
 
-    private function getKeyValueParamsFromArray($data)
+    public function getKeyValueParamsFromArray($data)
     {
         foreach ($data as $key => $val) {
             $params[] = "$key='$val'";
@@ -137,15 +149,11 @@ class RepositoryMysqlService
     {
         $q = Mysql::getDb()->query($queryString);
 
-        $rows = $q->fetchAll(\PDO::FETCH_NUM);
-
-        $q->closeCursor();
-
         $counts = $this->countColsInTables($tables);
 
         $arrays = [];
 
-        foreach ($rows as $values) {
+        while ($row = $q->fetch(\PDO::FETCH_NUM)) {
 
             $i = 0;
 
@@ -153,7 +161,7 @@ class RepositoryMysqlService
 
             foreach ($counts as $table => $count) {
 
-                $tables[$table] = array_slice($values, $i, $count);
+                $tables[$table] = array_slice($row, $i, $count);
 
                 $i += $count;
 
@@ -165,42 +173,4 @@ class RepositoryMysqlService
 
         return $arrays;
     }
-
-    private function getSliceColsOneValues($queryString, $tables)
-    {
-
-        $q = Mysql::getDb()->query($queryString);
-
-        $res = $q->fetch(\PDO::FETCH_NUM);
-
-        $i = 0;
-
-        $cols = [];
-
-        $counts = $this->countColsInTables($tables);
-
-        foreach ($counts as $col => $count) {
-
-            $cols[$col] = array_slice($res, $i, $count);
-
-            $i += $count;
-
-        }
-
-        return $cols;
-    }
-
-
-    private function uniteColsWithOneVals($cols, $vals)
-    {
-        $data = [];
-
-        foreach ($cols as $table => $col) {
-            $data[$table] = array_combine($col, $vals[$table]);
-        }
-
-        return $data;
-    }
-
-
 }

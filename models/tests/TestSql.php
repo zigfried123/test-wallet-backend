@@ -1,7 +1,8 @@
 <?php
 
-namespace models;
+namespace models\tests;
 
+use models\Mysql;
 use modules\user\models\repositories\UserRepository;
 
 class TestSql
@@ -43,7 +44,7 @@ class TestSql
 
     private static function explain($table, $where, $join='')
     {
-        $q = Mysql::$db->query("explain SELECT * FROM $table $join where $where");
+        $q = Mysql::getDb()->query("explain SELECT * FROM $table $join where $where");
         var_dump($q->fetch());
     }
 
@@ -52,7 +53,7 @@ class TestSql
     {
         $start = microtime(true);
 
-        $q = Mysql::$db->query("SELECT * FROM $table where $where");
+        $q = Mysql::getDb()->query("SELECT * FROM $table where $where");
 
         var_dump($q->fetch());
 
@@ -66,13 +67,11 @@ class TestSql
 
     private function clearTable($table)
     {
-        Mysql::$db->query("TRUNCATE TABLE $table");
+        Mysql::getDb()->query("TRUNCATE TABLE $table");
     }
 
     private static function insert($table,$cols=[],$data=[])
     {
-
-
         $vals = implode(',', $data);
 
         $cols = array_map(function($v){
@@ -83,7 +82,7 @@ class TestSql
 
         $sql = "INSERT INTO $table $cols VALUES $vals";
 
-        Mysql::$db->query($sql);
+        Mysql::getDb()->query($sql);
     }
 
 
@@ -192,7 +191,7 @@ class TestSql
         DROP PROCEDURE $name
        ";
 
-        Mysql::$db->query($sql);
+        Mysql::getDb()->query($sql);
     }
 
     public static function testProcedure($name='test')
@@ -207,7 +206,7 @@ class TestSql
         
          ";
 
-        $q = Mysql::$db->query($sql);
+        $q = Mysql::getDb()->query($sql);
 
       //  var_dump($q->fetch());
 
@@ -220,11 +219,11 @@ class TestSql
         CALL test(500,@a);
         ";
 
-        $q = Mysql::$db->query($sql);
+        $q = Mysql::getDb()->query($sql);
 
         $sql = "select @a;";
 
-         $q = Mysql::$db->query($sql);
+         $q = Mysql::getDb()->query($sql);
 
         var_dump($q->fetch());
     }
@@ -240,13 +239,13 @@ class TestSql
         END;
         ";
 
-        $q = Mysql::$db->query($sql);
+        $q = Mysql::getDb()->query($sql);
     }
 
     public static function dropTrigger()
     {
         $sql = 'DROP TRIGGER test';
-        Mysql::$db->query($sql);
+        Mysql::getDb()->query($sql);
     }
 
     public static function testForeignKey()
@@ -254,7 +253,7 @@ class TestSql
 
         $sql = 'SET FOREIGN_KEY_CHECKS=0';
 
-        $q = Mysql::$db->query($sql);
+        $q = Mysql::getDb()->query($sql);
 
 
         $sql = '
@@ -263,20 +262,20 @@ ADD CONSTRAINT FK_User
 FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE;
 ';
 
-        $q = Mysql::$db->query($sql);
+        $q = Mysql::getDb()->query($sql);
 
         $sql = 'SET FOREIGN_KEY_CHECKS=1';
-        $q = Mysql::$db->query($sql);
+        $q = Mysql::getDb()->query($sql);
     }
 
     public static function testView()
     {
         $sql = "CREATE VIEW max as SELECT * FROM user WHERE name='max'";
-        Mysql::$db->query($sql);
+        Mysql::getDb()->query($sql);
 
         $sql = "SELECT * FROM max";
 
-        $q = Mysql::$db->query($sql);
+        $q = Mysql::getDb()->query($sql);
 
         var_dump($q->fetchAll());
     }

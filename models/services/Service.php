@@ -1,6 +1,6 @@
 <?php
 
-namespace models;
+namespace models\services;
 
 use models\traits\NestedSingleton;
 

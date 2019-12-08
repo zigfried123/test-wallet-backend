@@ -41,7 +41,7 @@ class Query
         $this->_tables[] = $table;
 
         $on = current($relation);
-        $this->_queryString .= " LEFT JOIN $table $alias ON $alias.$on[0] = {$this->_alias}.$on[1]";
+        $this->_queryString .= " LEFT JOIN $table $alias ON $alias.$on[0] = $on[1]";
 
         if ($callback) {
             $this->_queryString = $callback($this)->_queryString;
@@ -105,22 +105,14 @@ class Query
 
     public function one()
     {
-        if (current($this->_select) == '*') {
-            $data = $this->_repositoryService->getAllFieldsByTablesOneResult($this->_queryString, $this->_tables);
-        } else {
-            $data =  $this->_repositoryService->getDefinedFields($this->_queryString, 'one');
-        }
+        $data = (new QueryResult())->getResult(current($this->_select),$this->_queryString, $this->_tables);
 
-        return $data;
+        return $data[0];
     }
 
     public function all()
     {
-        if (current($this->_select) == '*') {
-            $data = $this->_repositoryService->getAllFieldsByTablesAllResults($this->_queryString, $this->_tables);
-        }else{
-            $data =  $this->_repositoryService->getDefinedFields($this->_queryString, 'all');
-        }
+        $data = (new QueryResult())->getResult(current($this->_select),$this->_queryString, $this->_tables);
 
         return $data;
     }

@@ -19,8 +19,6 @@ class UserEntity extends Entity
         $this->_name = $name;
     }
 
-
-
     public function __call($name, $args)
     {
         if(strpos($name,'set') !== false) {

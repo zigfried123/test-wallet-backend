@@ -2,7 +2,7 @@
 
 namespace modules\wallet\models\services;
 
-use models\Service;
+use models\services\Service;
 use modules\wallet\models\entities\BalanceEntity;
 use modules\wallet\models\repositories\BalanceRepository;
 

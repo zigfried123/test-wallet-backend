@@ -2,6 +2,11 @@
 
 namespace modules\wallet\models\strategies;
 
+/**
+ * Class Reason
+ * @package modules\wallet\models\strategies
+ * @property Reason $_strategy
+ */
 class Reason
 {
     const REASONS = [1 => 'stock', 2 => 'refund'];

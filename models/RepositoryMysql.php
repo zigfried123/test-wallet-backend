@@ -2,7 +2,9 @@
 
 namespace models;
 
+use models\services\EntityService;
 use models\services\RepositoryMysqlService;
+use models\services\RepositoryService;
 
 /**
  * Class Repository
@@ -19,7 +21,7 @@ class RepositoryMysql extends Repository
    {
        parent::__construct();
 
-       $this->_db = Mysql::$db;
+       $this->_db = Mysql::getDb();
 
        $this->_repositoryMysqlService = RepositoryMysqlService::getInstance();
 
@@ -27,9 +29,9 @@ class RepositoryMysql extends Repository
 
     public function create(Entity $entity)
     {
-        $properties = $this->getProperties($entity);
+        $properties = $this->_entityService->getProperties($entity);
 
-        $keys = $this->normalizeKeys(array_keys($properties));
+        $keys = RepositoryService::normalizeKeysFromVars(array_keys($properties));
 
         $keys = implode(',', $keys);
 
@@ -73,10 +75,40 @@ class RepositoryMysql extends Repository
 
         $data = $q->fetch(\PDO::FETCH_ASSOC);
 
-        $this->fillEntity($data);
+        $entityService = new EntityService();
 
-        return $this->entity;
+        $entity = $entityService->fillEntity($data, $this->tableName);
+
+        return $entity;
     }
+
+    public function findAll($data)
+    {
+        if(is_integer($data)) {
+            $id = $data;
+            $sql = "SELECT * FROM `{$this->tableName}` WHERE id=:id";
+            $params = [':id' => $id];
+        }elseif(is_array($data)){
+            $sql = "SELECT * FROM `{$this->tableName}` WHERE";
+            $sql .= " ". $this->_repositoryMysqlService->getKeyValueParamsFromArray($data);
+            $params = $data;
+        }
+
+        $q = $this->execute($sql, $params);
+
+        while($data = $q->fetch(\PDO::FETCH_ASSOC)) {
+
+            $entityService = new EntityService();
+
+            $entity = $entityService->fillEntity($data, $this->tableName);
+
+            $entities[] = $entity;
+
+        }
+
+        return $entities;
+    }
+
 
     public function findSql($sql, $params=[])
     {
@@ -84,7 +116,9 @@ class RepositoryMysql extends Repository
 
         $data = $q->fetch(\PDO::FETCH_ASSOC);
 
-        $this->fillEntity($data);
+        $entityService = new EntityService();
+
+        $entityService->fillEntity($data,$this->tableName);
 
         return $data;
     }
@@ -119,9 +153,7 @@ class RepositoryMysql extends Repository
 
         $tables = explode(',',end($data));
 
-        $data = $this->_repositoryMysqlService->getAllFieldsByTablesAllResults($sql,$tables);
-
-        var_dump($data); die;
+        $data = $this->_repositoryMysqlService->getAllFieldsByTables($sql,$tables);
 
         return $data;
 

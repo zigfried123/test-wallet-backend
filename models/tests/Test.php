@@ -1,6 +1,6 @@
 <?php
 
-namespace models;
+namespace models\tests;
 
 use modules\user\controllers\UserController;
 use modules\user\models\entities\UserEntity;

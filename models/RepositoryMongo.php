@@ -29,7 +29,7 @@ class RepositoryMongo extends Repository
 
         for ($i = 0; $i < $num; $i++) {
 
-            $properties = $this->getProperties($entities[$i]);
+            $properties = $this->_entityService->getProperties($entities[$i]);
 
             if (isset($properties['id'])) {
 
@@ -50,9 +50,10 @@ class RepositoryMongo extends Repository
     }
 */
 
+
     public function findOne($data)
     {
-        $props = $this->getProperties($data);
+        $props = $this->_entityService->getProperties($data);
 
         $res = $this->_collection->findOne($props);
 
@@ -60,7 +61,7 @@ class RepositoryMongo extends Repository
 
             $this->replaceId($res);
 
-            $entity = $this->fillEntity($res);
+            $entity = $this->_entityService->fillEntity($res, $this->tableName);
 
             return $entity;
         }
@@ -68,7 +69,7 @@ class RepositoryMongo extends Repository
 
     public function findAll($data,$options = [])
     {
-        $props = $this->getProperties($data);
+        $props = $this->_entityService->getProperties($data);
 
         $cursor = $this->_collection->find($props, $options);
 
@@ -79,7 +80,7 @@ class RepositoryMongo extends Repository
 
                 $this->replaceId($document);
 
-                $entities[] = $this->fillEntity($document);
+                $entities[] = $this->_entityService->fillEntity($document,$this->tableName);
             }
         }
 
@@ -88,7 +89,7 @@ class RepositoryMongo extends Repository
 
     public function create($entity)
     {
-        $props = $this->getProperties($entity);
+        $props = $this->_entityService->getProperties($entity);
 
         $entity = $this->createOne($props);
 
@@ -101,7 +102,7 @@ class RepositoryMongo extends Repository
 
         $props['id'] = $this->getIdFromMongoEntity($res);
 
-        $entity = $this->fillEntity($props);
+        $entity = $this->_entityService->fillEntity($props,$this->tableName);
 
         return $entity;
     }
@@ -125,7 +126,7 @@ class RepositoryMongo extends Repository
 
     public function delete($entity)
     {
-        $props = $this->getProperties($entity);
+        $props = $this->_entityService->getProperties($entity);
 
         $res = $this->_collection->deleteOne($props);
 
@@ -134,7 +135,7 @@ class RepositoryMongo extends Repository
 
     public function deleteMany($entity)
     {
-        $props = $this->getProperties($entity);
+        $props = $this->_entityService->getProperties($entity);
 
         $res = $this->_collection->deleteMany($props);
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace models;
+namespace models\tests;
 
 use MongoDB\Client;
 

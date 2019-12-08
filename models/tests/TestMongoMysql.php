@@ -1,8 +1,10 @@
 <?php
 
-namespace models;
+namespace models\tests;
 
 use models\MongoDb;
+use models\Mysql;
+use models\Profiler;
 use MongoDB\Collection;
 
 class TestMongoMysql
@@ -48,7 +50,7 @@ class TestMongoMysql
 
         Profiler::start();
         $sql = "SELECT * FROM test where name='vkxcal'";
-        $q = Mysql::$db->query($sql);
+        $q = Mysql::getDb()->query($sql);
         Profiler::end();
 
         Profiler::start();
@@ -59,14 +61,14 @@ class TestMongoMysql
     private static function disabledCacheQueries()
     {
         $sql = 'SET GLOBAL query_cache_size=0;';
-        Mysql::$db->query($sql);
+        Mysql::getDb()->query($sql);
     }
 
     private static function dropColumn()
     {
         $sql = 'ALTER TABLE test DROP COLUMN test';
 
-        Mysql::$db->query($sql);
+        Mysql::getDb()->query($sql);
     }
 
     //7.2s 8s 7.4s
@@ -74,7 +76,7 @@ class TestMongoMysql
     {
         $sql = 'ALTER TABLE test ADD column test integer not null default 0';
 
-        Mysql::$db->query($sql);
+        Mysql::getDb()->query($sql);
     }
 
     // 6.8s
@@ -82,14 +84,14 @@ class TestMongoMysql
     {
         $sql = 'ALTER TABLE test ADD column test tinyint not null default 0';
 
-        Mysql::$db->query($sql);
+        Mysql::getDb()->query($sql);
     }
 
     private static function testVarchar()
     {
         $sql = "ALTER TABLE test ADD column test varchar(50) not null default ''";
 
-        Mysql::$db->query($sql);
+        Mysql::getDb()->query($sql);
     }
 
 }

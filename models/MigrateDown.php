@@ -6,7 +6,7 @@ class MigrateDown
 {
     public function execute()
     {
-        $q = Mysql::$db->query('SELECT * FROM `migrations` ORDER BY id DESC LIMIT 1');
+        $q = Mysql::getDb()->query('SELECT * FROM `migrations` ORDER BY id DESC LIMIT 1');
         $mgrs = $q->fetch()['name'];
 
 
@@ -14,7 +14,7 @@ class MigrateDown
 
         if (class_exists($class)) {
             if ((new $class())->down()) {
-                $q = Mysql::$db->prepare("DELETE FROM `migrations` WHERE name=:migration");
+                $q = Mysql::getDb()->prepare("DELETE FROM `migrations` WHERE name=:migration");
                 if($q->execute(['migration' => $mgrs])) echo "миграция $mgrs отменена";
             }
         }

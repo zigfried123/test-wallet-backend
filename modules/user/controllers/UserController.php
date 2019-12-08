@@ -58,12 +58,12 @@ class UserController extends Controller
         $data = $this->repository->find()
             ->alias('u')
             ->select(['*'])
-            ->leftJoin(['wallet w' => ['user_id', 'id']])
-            ->leftJoin(['balance b' => ['wallet_id', 'id']])
-            ->where(['user_id' => '78'])
-            ->groupBy('u.id')
+            ->leftJoin(['wallet w' => ['user_id', 'u.id']])
+            ->leftJoin(['balance b' => ['wallet_id', 'w.id']])
             ->orderBy('u.id ASC')
-            ->all();
+            ->one();
+
+        var_dump($data); die;
 
         /*
                 $sql = "
