@@ -105,14 +105,14 @@ class Query
 
     public function one()
     {
-        $data = (new QueryResult())->getResult(current($this->_select),$this->_queryString, $this->_tables);
+        $data = (new QueryOne())->getResult(current($this->_select),$this->_queryString, $this->_tables);
 
         return $data[0];
     }
 
     public function all()
     {
-        $data = (new QueryResult())->getResult(current($this->_select),$this->_queryString, $this->_tables);
+        $data = (new QueryAll())->getResult(current($this->_select),$this->_queryString, $this->_tables);
 
         return $data;
     }
