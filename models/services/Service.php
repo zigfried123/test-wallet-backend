@@ -2,6 +2,7 @@
 
 namespace models\services;
 
+use models\builders\ServiceBuilder;
 use models\traits\NestedSingleton;
 
 class Service
@@ -13,6 +14,7 @@ class Service
 
     public function __construct()
     {
-
+        $builder = new ServiceBuilder($this);
+        $builder->build();
     }
 }
